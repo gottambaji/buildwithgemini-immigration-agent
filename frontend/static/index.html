@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VisaSphere — All-in-One US Visa & Legal Support Concierge</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
   :root {
     --primary: #818cf8;
@@ -59,9 +60,22 @@
   .sender-name { font-size:0.75rem; font-weight:600; color:var(--on-surface-variant); margin-left:0.2rem; }
   .msg.user .sender-name { margin-right:0.2rem; }
   
-  .bubble { padding:0.95rem 1.3rem; border-radius:18px 18px 18px 4px; background:var(--surface); color:var(--on-surface); border:1px solid var(--outline); text-align:left; white-space:pre-wrap; line-height:1.55; box-shadow:0 2px 6px rgba(0,0,0,0.04); position:relative; }
-  .msg.user .bubble { border-radius:18px 18px 4px 18px; background:var(--primary); color:var(--on-primary); border:none; }
+  .bubble { padding:0.95rem 1.3rem; border-radius:18px 18px 18px 4px; background:var(--surface); color:var(--on-surface); border:1px solid var(--outline); text-align:left; line-height:1.55; box-shadow:0 2px 6px rgba(0,0,0,0.04); position:relative; }
+  .msg.user .bubble { border-radius:18px 18px 4px 18px; background:var(--primary); color:var(--on-primary); border:none; white-space:pre-wrap; }
   .bubble.rich { background:transparent; border:none; padding:0; max-width:100%; white-space:normal; box-shadow:none; }
+
+  /* Markdown formatting inside bubbles */
+  .formatted-markdown h1, .formatted-markdown h2, .formatted-markdown h3, .formatted-markdown h4 { margin: 0.8rem 0 0.4rem; color: var(--on-surface); font-weight: 700; }
+  .formatted-markdown h1 { font-size: 1.35rem; }
+  .formatted-markdown h2 { font-size: 1.2rem; }
+  .formatted-markdown h3 { font-size: 1.05rem; }
+  .formatted-markdown p { margin: 0.4rem 0; line-height: 1.55; }
+  .formatted-markdown ul, .formatted-markdown ol { margin: 0.4rem 0; padding-left: 1.3rem; }
+  .formatted-markdown li { margin: 0.2rem 0; }
+  .formatted-markdown strong { color: var(--primary); font-weight: 600; }
+  .formatted-markdown code { background: var(--surface-variant); padding: 0.15rem 0.35rem; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+  .formatted-markdown pre { background: var(--surface-variant); padding: 0.8rem; border-radius: 8px; overflow-x: auto; margin: 0.5rem 0; }
+  .formatted-markdown hr { border: none; border-top: 1px solid var(--outline); margin: 0.8rem 0; }
   
   .copy-btn { position:absolute; top:0.4rem; right:0.5rem; background:var(--surface-variant); border:1px solid var(--outline); color:var(--on-surface-variant); font-size:0.7rem; padding:0.2rem 0.45rem; border-radius:4px; cursor:pointer; opacity:0; transition:opacity 0.2s ease; }
   .bubble:hover .copy-btn { opacity:1; }
@@ -306,6 +320,19 @@ function flattenText(messages) {
   return out.join("\n").trim();
 }
 
+function renderMarkdownHTML(text) {
+  if (typeof marked !== "undefined" && marked.parse) {
+    return marked.parse(text);
+  }
+  return text
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
+}
+
 function renderReply(b, parts) {
   b.textContent = "";
   const copyBtn = el("button", "copy-btn", "Copy");
@@ -316,11 +343,19 @@ function renderReply(b, parts) {
   copyBtn.onclick = () => copyText(copyBtn, textStr || flattenText(a2ui));
   b.appendChild(copyBtn);
 
-  if (textStr) b.appendChild(el("div", null, textStr));
+  if (textStr) {
+    const markdownDiv = el("div", "formatted-markdown");
+    markdownDiv.innerHTML = renderMarkdownHTML(textStr);
+    b.appendChild(markdownDiv);
+  }
 
   if (a2ui.length) {
     b.classList.add("rich");
-    if (!renderSurface(a2ui, b)) b.appendChild(el("div", null, flattenText(a2ui) || "(no card content)"));
+    if (!renderSurface(a2ui, b)) {
+      const fallbackDiv = el("div", "formatted-markdown");
+      fallbackDiv.innerHTML = renderMarkdownHTML(flattenText(a2ui) || "(no card content)");
+      b.appendChild(fallbackDiv);
+    }
   }
   if (!b.childNodes.length) b.appendChild(el("div", null, "(no response)"));
   log.scrollTop = log.scrollHeight;
