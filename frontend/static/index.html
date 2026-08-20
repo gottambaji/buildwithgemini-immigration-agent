@@ -6,38 +6,61 @@
 <title>VisaSphere — Non-Immigrant Platform & Legal Concierge</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
 <style>
-  :root { --accent:#0d6efd; --accent-dark:#0a58ca; --bg:#f8f9fa; --border:#dee2e6; }
+  :root {
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --on-primary: #ffffff;
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --surface-variant: #e9ecef;
+    --on-surface: #212529;
+    --on-surface-variant: #495057;
+    --outline: #dee2e6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --primary: #3d8bfd;
+      --primary-dark: #0d6efd;
+      --on-primary: #ffffff;
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --surface-variant: #2d2d2d;
+      --on-surface: #f8f9fa;
+      --on-surface-variant: #adb5bd;
+      --outline: #383d41;
+    }
+  }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:system-ui,-apple-system,sans-serif; background:var(--bg); display:flex; flex-direction:column; height:100vh; }
-  header { background:linear-gradient(135deg, #0d6efd, #052c65); color:#fff; padding:1.1rem 1.5rem; font-weight:700; font-size:1.2rem; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+  body { margin:0; font-family:system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--on-surface); display:flex; flex-direction:column; height:100vh; }
+  header { background:linear-gradient(135deg, #0d6efd, #052c65); color:#fff; padding:1.1rem 1.5rem; font-weight:700; font-size:1.2rem; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 4px rgba(0,0,0,0.15); }
   header .sub { font-size:0.85rem; font-weight:400; opacity:0.9; }
   #log { flex:1; overflow-y:auto; padding:1.5rem; max-width:850px; width:100%; margin:0 auto; }
   .msg { margin:.8rem 0; }
   .msg.user { text-align:right; }
-  .bubble { display:inline-block; padding:.8rem 1.1rem; border-radius:14px; background:#fff; border:1px solid var(--border); text-align:left; max-width:90%; white-space:pre-wrap; line-height:1.5; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
-  .msg.user .bubble { background:var(--accent); color:#fff; border:none; }
+  .bubble { display:inline-block; padding:.8rem 1.1rem; border-radius:14px; background:var(--surface); color:var(--on-surface); border:1px solid var(--outline); text-align:left; max-width:90%; white-space:pre-wrap; line-height:1.5; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+  .msg.user .bubble { background:var(--primary); color:var(--on-primary); border:none; }
   .bubble.rich { background:transparent; border:none; padding:0; max-width:100%; white-space:normal; }
-  form { display:flex; gap:.6rem; padding:1.2rem; border-top:1px solid var(--border); background:#fff; max-width:850px; width:100%; margin:0 auto; }
-  input { flex:1; padding:.8rem 1rem; border:1px solid var(--border); border-radius:10px; font-size:1rem; outline:none; transition:border-color 0.2s; }
-  input:focus { border-color:var(--accent); }
-  button { padding:.8rem 1.4rem; border:none; border-radius:10px; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; font-size:1rem; transition:background 0.2s; }
-  button:hover { background:var(--accent-dark); }
+  form { display:flex; gap:.6rem; padding:1.2rem; border-top:1px solid var(--outline); background:var(--surface); max-width:850px; width:100%; margin:0 auto; }
+  input { flex:1; padding:.8rem 1rem; border:1px solid var(--outline); background:var(--bg); color:var(--on-surface); border-radius:10px; font-size:1rem; outline:none; transition:border-color 0.2s; }
+  input:focus { border-color:var(--primary); }
+  button { padding:.8rem 1.4rem; border:none; border-radius:10px; background:var(--primary); color:var(--on-primary); font-weight:600; cursor:pointer; font-size:1rem; transition:background 0.2s; }
+  button:hover { background:var(--primary-dark); }
 
-  /* A2UI component styles */
-  .a2card { border:1px solid var(--border); border-radius:12px; padding:1.2rem; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06); max-width:100%; }
+  /* A2UI component styles using semantic tokens */
+  .a2card { border:1px solid var(--outline); border-radius:12px; padding:1.2rem; background:var(--surface); color:var(--on-surface); box-shadow:0 2px 8px rgba(0,0,0,.1); max-width:100%; }
   .a2card + .a2card, .a2col > .a2card { margin-top:.8rem; }
   .a2col { display:flex; flex-direction:column; gap:.5rem; }
   .a2row { display:flex; flex-direction:row; gap:.8rem; align-items:center; flex-wrap:wrap; }
   .a2row.between { justify-content:space-between; }
-  .a2text { margin:0; line-height:1.4; }
-  .a2text.a2-h1 { font-size:1.5rem; font-weight:700; color:#111; }
-  .a2text.a2-h2 { font-size:1.25rem; font-weight:700; color:#222; }
-  .a2text.a2-h3 { font-size:1.1rem; font-weight:600; color:#333; }
-  .a2text.a2-h4 { font-size:1rem; font-weight:600; color:#444; }
-  .a2text.a2-caption { font-size:.85rem; color:#666; }
-  .a2divider { border:none; border-top:1px solid var(--border); margin:.6rem 0; width:100%; }
+  .a2text { margin:0; line-height:1.4; color:var(--on-surface); }
+  .a2text.a2-h1 { font-size:1.5rem; font-weight:700; color:var(--on-surface); }
+  .a2text.a2-h2 { font-size:1.25rem; font-weight:700; color:var(--on-surface); }
+  .a2text.a2-h3 { font-size:1.1rem; font-weight:600; color:var(--on-surface); }
+  .a2text.a2-h4 { font-size:1rem; font-weight:600; color:var(--on-surface); }
+  .a2text.a2-caption { font-size:.85rem; color:var(--on-surface-variant); }
+  .a2divider { border:none; border-top:1px solid var(--outline); margin:.6rem 0; width:100%; }
   .a2img { max-width:100%; border-radius:8px; display:block; }
-  .material-symbols-outlined { font-family:'Material Symbols Outlined'; font-size:1.25rem; line-height:1; vertical-align:middle; color:var(--accent); }
+  .material-symbols-outlined { font-family:'Material Symbols Outlined'; font-size:1.25rem; line-height:1; vertical-align:middle; color:var(--primary); }
 </style>
 </head>
 <body>
