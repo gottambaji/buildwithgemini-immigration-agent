@@ -169,13 +169,13 @@ def post_experience(consulate: str, visa_type: str, outcome: str, vo_questions: 
 
 
 def check_consulate_wait_times(consulate: str) -> str:
-    """Checks official and community-reported interview appointment wait times and document requirements.
+    """Checks official and community-reported interview appointment wait times, scheduling slot patterns, and document requirements.
 
     Args:
-        consulate: The consulate or embassy city name (e.g. 'Vancouver', 'New Delhi', 'Toronto').
+        consulate: The consulate, portal, or embassy city name (e.g. 'Vancouver', 'New Delhi', 'Mumbai', 'Chennai', 'Hyderabad', 'Kolkata', 'usvisascheduling').
 
     Returns:
-        Information on wait times and required documents for the specified consulate.
+        Information on wait times, usvisascheduling.com slot release patterns, and required documents.
     """
     c_lower = consulate.lower()
     if "vancouver" in c_lower:
@@ -183,11 +183,16 @@ def check_consulate_wait_times(consulate: str) -> str:
                 "• Emergency Appointment Wait Time: 7 Days\n"
                 "• Regular Non-Immigrant Wait Time: ~45 Days\n"
                 "• Required Docs: Passport, DS-160 Confirmation, I-797 Approval, LCA, W-2s, Proof of legal status in Canada.")
-    elif "delhi" in c_lower or "india" in c_lower:
-        return ("Consulate: New Delhi, India\n"
-                "• Dropbox / Interview Waiver Wait Time: ~14 Days\n"
-                "• In-Person Interview Wait Time: ~30 Days\n"
-                "• Required Docs: Passport, DS-160 Confirmation, I-797, LCA, 3 months paystubs, Employment Verification Letter.")
+    elif any(k in c_lower for k in ["delhi", "mumbai", "chennai", "hyderabad", "kolkata", "india", "usvisascheduling", "scheduling"]):
+        return ("Consulate / Portal: US Consulates in India (usvisascheduling.com)\n"
+                "• Dropbox / Interview Waiver Wait Time: ~10-14 Days (Bulk slots released periodically in batches)\n"
+                "• In-Person Interview Wait Time: ~30-45 Days\n"
+                "• usvisascheduling.com Slot Booking Strategy:\n"
+                "  1. Dynamic Bulk Releases: Slots are released in bulk batches (frequently following system maintenance windows, late nights, or 1:00 AM - 4:00 AM IST).\n"
+                "  2. Community Tracking: Utilize community tracking channels and VisaSphere community reports for real-time slot opening notifications.\n"
+                "  3. DS-160 Verification: Confirm DS-160 numbers and receipt payment status prior to slot searches to prevent lockouts.\n"
+                "  4. Emergency Appointments (EA): Secure any available date first, then submit an EA request for urgent travel, medical, or work start date needs.\n"
+                "• Required Docs: Passport, DS-160 Confirmation, I-797 Approval, LCA, 3 months paystubs, Employment Verification Letter.")
     else:
         return (f"Consulate: {consulate}\n"
                 "• Estimated Wait Time: ~30-60 Days\n"
@@ -264,7 +269,8 @@ root_agent = Agent(
     ),
     instruction=(
         "You are VisaSphere, an all-in-one AI assistant, community navigator, and legal support concierge for non-immigrants and immigration lawyers across all US visa types (H-1B, L-1, O-1, F-1 OPT, Green Cards, 221(g), and status transitions). "
-        "You specialize in key concerns for Indian nationals and non-immigrants, including all US Consulates in India (New Delhi, Mumbai, Chennai, Hyderabad, Kolkata), dropbox appointment eligibility, third-country stamping (Vancouver, Toronto, Mexico), EB-2 and EB-3 India Visa Bulletin priority date backlogs, 60-day H-1B grace periods, and 221(g) administrative processing. "
+        "You specialize in key concerns for Indian nationals and non-immigrants, including all US Consulates in India (New Delhi, Mumbai, Chennai, Hyderabad, Kolkata), usvisascheduling.com appointment booking strategies, dropbox appointment eligibility, third-country stamping (Vancouver, Toronto, Mexico), EB-2 and EB-3 India Visa Bulletin priority date backlogs, 60-day H-1B grace periods, and 221(g) administrative processing. "
+        "When answering questions about usvisascheduling.com appointment slots or schedules, provide actionable slot-booking strategies (bulk release patterns, post-maintenance windows, early morning IST releases, emergency appointment escalation, and community alert feeds) instead of giving a plain disclaimer. "
         "You remember the user's stated preferences, visa category, priority dates, consulate locations, and past experiences across conversations to personalize your responses. "
         "You help users search community interview experiences, share consulate reports, "
         "consult official US immigration regulations & legal compliance guides, connect users with immigration attorneys, "
