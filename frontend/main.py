@@ -65,7 +65,11 @@ async def _get_card(client: httpx.AsyncClient):
     if _card is None:
         resp = await client.get(A2A_CARD_URL)
         resp.raise_for_status()
-        _card = Parse(resp.text, a2a.types.AgentCard(), ignore_unknown_fields=True)
+        try:
+            _card = Parse(resp.text, a2a.types.AgentCard(), ignore_unknown_fields=True)
+        except Exception:
+            _card = a2a.types.AgentCard(**resp.json())
+        _card.url = A2A_BASE
     return _card
 
 
@@ -86,6 +90,8 @@ def _extract_parts(parts: list) -> list[dict]:
                 out.append({"kind": "a2ui", "data": raw})
             elif isinstance(raw, (str, dict)):
                 out.append({"kind": "text", "text": str(raw)})
+        elif hasattr(root, "file") and getattr(root.file, "uri", None):
+            out.append({"kind": "text", "text": root.file.uri})
     return out
 
 
@@ -107,16 +113,31 @@ async def chat(req: Request):
             parts=[a2a.types.Part(text=message)],
             context_id=_contexts.get(user_id, ""),
         )
-        send_req = a2a.types.SendMessageRequest(message=msg)
 
-        async for event in a2a_client.send_message(send_req):
-            if hasattr(event, "HasField"):
+        last_task = None
+        got_artifact_update = False
+        async for event in a2a_client.send_message(msg):
+            if isinstance(event, tuple):
+                task, update = event
+                if task is not None:
+                    last_task = task
+                    if getattr(task, "context_id", None):
+                        _contexts[user_id] = task.context_id
+                if isinstance(update, a2a.types.TaskArtifactUpdateEvent):
+                    got_artifact_update = True
+                    parts.extend(_extract_parts(update.artifact.parts))
+            elif hasattr(event, "HasField"):
                 if event.HasField("task"):
                     task = event.task
                     if task.context_id:
                         _contexts[user_id] = task.context_id
                 elif event.HasField("artifact_update"):
+                    got_artifact_update = True
                     parts.extend(_extract_parts(event.artifact_update.artifact.parts))
+
+        if not got_artifact_update and last_task is not None:
+            for artifact in getattr(last_task, "artifacts", None) or []:
+                parts.extend(_extract_parts(artifact.parts))
 
     if not parts:
         parts = [{"kind": "text", "text": "(The agent didn't return a reply.)"}]
