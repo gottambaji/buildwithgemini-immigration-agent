@@ -69,7 +69,6 @@ async def _get_card(client: httpx.AsyncClient):
             _card = Parse(resp.text, a2a.types.AgentCard(), ignore_unknown_fields=True)
         except Exception:
             _card = a2a.types.AgentCard(**resp.json())
-        _card.url = A2A_BASE
     return _card
 
 
@@ -113,10 +112,14 @@ async def chat(req: Request):
             parts=[a2a.types.Part(text=message)],
             context_id=_contexts.get(user_id, ""),
         )
+        send_req = a2a.types.SendMessageRequest(
+            message=msg,
+            configuration=a2a.types.SendMessageConfiguration(),
+        )
 
         last_task = None
         got_artifact_update = False
-        async for event in a2a_client.send_message(msg):
+        async for event in a2a_client.send_message(send_req):
             if isinstance(event, tuple):
                 task, update = event
                 if task is not None:
