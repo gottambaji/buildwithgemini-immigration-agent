@@ -1,0 +1,14 @@
+# H-1B Visa & 221(g) Administrative Processing Legal Guide
+
+## What is 221(g) Administrative Processing?
+Section 221(g) of the United States Immigration and Nationality Act (INA) permits a U.S. Consular Officer to suspend processing of a visa application when additional documentation or background checks are required before a final visa decision can be rendered.
+
+## Common 221(g) Scenarios for H-1B Applicants:
+1. Client Letter & Vendor Chain Verification: Third-party placement candidates requested to supply End-Client Letters, Master Services Agreements (MSA), and Statements of Work (SOW).
+2. TAL (Technology Alert List): STEM applicants in sensitive research or engineering fields undergoing security advisory opinion checks.
+3. Employer Financial & Tax Records: Requests for employer W-2 rosters, tax returns, or office lease agreements.
+
+## Legal Advice & Lawyer Assistance:
+- Attorney Interventions: Licensed immigration attorneys can submit formal legal briefs and employer documentation directly to consular legal posts.
+- Expedite Requests: If 221(g) processing exceeds 60 days causing severe financial loss or urgent humanitarian need, an immigration attorney can file a congressional inquiry or emergency expedite motion with the Department of State.
+- Representation Contact: Non-immigrant applicants encountering 221(g) refusals or RFEs should request a direct attorney review.
